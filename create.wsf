@@ -1,0 +1,37 @@
+<job>
+<script language="VBScript" src="VBS-MS-Office-App-Creator/create-MS-Office-app.vbs" />
+<script language="VBScript">
+
+   option explicit
+
+   dim app
+   dim xls
+
+   dim xlsName
+   xlsName = currentDir() & "Excel-OleDb-Client.xlsm"
+
+   set xls = createOfficeApp("excel", xlsName)
+   if xls is nothing then ' {
+      wscript.echo("Could not create excel worksheet.")
+      wscript.quit(-1)
+   end if ' }
+
+   set app = xls.application
+
+ ' Microsoft Forms 2.0 Object Library:
+   addReference app, "{0D452EE1-E08F-101A-852E-02608C4D0BB4}", 2, 0
+
+   insertModule app, currentDir() & "functionality.vb", "funcs"               , 1
+   insertModule app, currentDir() & "addTextBox.vb"   , "addTextBox_"         , 1
+   insertModule app, currentDir() & "sheet1.vb"       , xls.sheets(1).codeName, 1
+
+   app.run "create", xlsName
+
+   compileApp app
+
+   xls.save
+
+   wscript.echo "The end"
+   createObject("WScript.Shell").appActivate app.caption
+
+</script> </job>
